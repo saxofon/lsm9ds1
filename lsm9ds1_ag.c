@@ -457,14 +457,14 @@ irqreturn_t lsm9ds1_ag_trigger_handler(int irq, void *p)
         s64 delta_ts = 16807;
         s64 ts;
 
-        printk(KERN_WARNING "%s:%d\n",__FUNCTION__,__LINE__);
+        dev_dbg(&indio_dev->dev, "%s:%d\n",__FUNCTION__,__LINE__);
 
         mutex_lock(&ldata->lock);
 
         ret = ldata->read_reg_8(indio_dev, LSM9DS1_REG_FIFO_SRC, &samples);
         samples = samples & LSM9DS1_AG_FSS;
-        printk(KERN_WARNING "%s:%d: samples = %i\n",
-               __FUNCTION__,__LINE__, samples);
+        dev_dbg(&indio_dev->dev, "%s:%d: samples = %i\n",
+	        __FUNCTION__,__LINE__, samples);
 
         if (ret < 0 || samples <= 0)
                 goto done;
@@ -485,7 +485,7 @@ done:
         iio_trigger_notify_done(indio_dev->trig);
         mutex_unlock(&ldata->lock);
  
-        printk(KERN_WARNING "%s:%d\n",__FUNCTION__,__LINE__);
+        dev_dbg(&indio_dev->dev, "%s:%d\n",__FUNCTION__,__LINE__);
         return IRQ_HANDLED;
 }
 
@@ -495,7 +495,7 @@ static int lsm9ds1_ag_buffer_preenable(struct iio_dev *indio_dev)
         int ret;
 
         
-        printk(KERN_WARNING "%s:%d\n",__FUNCTION__,__LINE__);
+        dev_dbg(&indio_dev->dev, "%s:%d\n",__FUNCTION__,__LINE__);
 
         mutex_lock(&ldata->lock);
 
@@ -514,7 +514,7 @@ static int lsm9ds1_ag_buffer_preenable(struct iio_dev *indio_dev)
 
         mutex_unlock(&ldata->lock);
 
-        printk(KERN_WARNING "%s:%d:end\n",__FUNCTION__,__LINE__);
+        dev_dbg(&indio_dev->dev, "%s:%d:end\n",__FUNCTION__,__LINE__);
         return ret;
 }
 
@@ -522,10 +522,10 @@ static int lsm9ds1_ag_buffer_postdisable(struct iio_dev *indio_dev)
 {
         int ret;
 
-        printk(KERN_WARNING "%s:%d\n",__FUNCTION__,__LINE__);
+        dev_dbg(&indio_dev->dev, "%s:%d\n",__FUNCTION__,__LINE__);
         ret = lsm9ds1_mreset_bit_reg(indio_dev, LSM9DS1_REG_CTRL_REG9,
                 LSM9DS1_AG_FIFO_EN);
-        printk(KERN_WARNING "%s:%d: ret = %i\n",__FUNCTION__,__LINE__, ret);
+        dev_dbg(&indio_dev->dev, "%s:%d: ret = %i\n",__FUNCTION__,__LINE__, ret);
         return ret;
 }
 
@@ -569,7 +569,7 @@ int lsm9ds1_ag_probe(struct iio_dev *indio_dev, struct device *dev)
                 goto error_buffer_cleanup;
         }
 	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
-        printk(KERN_WARNING "%s:%d: %i\n",__FUNCTION__,__LINE__, ret);
+        dev_dbg(&indio_dev->dev, "%s:%d: %i\n",__FUNCTION__,__LINE__, ret);
 
 	ret = iio_device_register(indio_dev);
 	if (ret >= 0)
